@@ -3,11 +3,11 @@
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
     <PackageId>BraveFish.RabbitBattleGear</PackageId>
-    <Version>1.0.0-dev</Version>
+    <Version>1.0.1-dev</Version>
     <Authors>mrkresnofatih</Authors>
     <Company>mrkresnofatihdev</Company>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
-    <RepositoryUrl>https://github.com/rabbitmq/rabbitmq-dotnet-client.git</RepositoryUrl>
+    <RepositoryUrl>https://github.com/mrkresnofatih/BraveFish.RabbitBattleGear.git</RepositoryUrl>
     <PackageLicenseExpression>MIT OR Apache-2.0</PackageLicenseExpression>
   </PropertyGroup>
 
