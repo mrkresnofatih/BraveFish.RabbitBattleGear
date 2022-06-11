@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace BraveFish.RabbitBattleGear
+﻿namespace BraveFish.RabbitBattleGear
 {
     public class RabbitBattleGearMessage
     {
