@@ -112,3 +112,16 @@ public class RabbitLoggerController : ControllerBase
     }
 }
 ```
+
+5. Register the DI for RabbitBattleGearContext & the Listener
+
+```c#
+public void ConfigureServices(IServiceCollection services)
+{
+
+    // other add services
+    services.AddRabbitContext();
+    services.AddHostedService<RabbitLogListener>();
+    
+}
+```
