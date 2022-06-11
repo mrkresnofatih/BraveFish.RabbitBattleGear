@@ -13,13 +13,15 @@ namespace BraveFish.RabbitBattleGear
         
         private string RabbitPassword { get; set; }
         
+        private string RabbitUsername { get; set; }
+        
         private EventHandler<ShutdownEventArgs> OnConnectionShutdown { get; set; }
 
         public RabbitBattleGearContextBuilder()
         {
             RabbitHostname = "localhost";
             RabbitPort = 5672;
-            RabbitMonoExchangeName = "rbtbtlgr";
+            RabbitMonoExchangeName = "rabbit";
             RabbitPassword = null;
             OnConnectionShutdown = (o, args) => { };
         }
@@ -48,6 +50,12 @@ namespace BraveFish.RabbitBattleGear
             return this;
         }
 
+        public IRabbitBattleGearContextBuilder SetUsername(string username)
+        {
+            RabbitUsername = username;
+            return this;
+        }
+
         public IRabbitBattleGearContextBuilder SetConnectionShutdown(EventHandler<ShutdownEventArgs> onConnectionShutdown)
         {
             OnConnectionShutdown = onConnectionShutdown;
@@ -60,7 +68,8 @@ namespace BraveFish.RabbitBattleGear
             {
                 HostName = RabbitHostname,
                 Port = RabbitPort,
-                Password = RabbitPassword
+                Password = RabbitPassword,
+                UserName = RabbitUsername,
             };
             var connection = factory.CreateConnection();
             var channel = connection.CreateModel();
@@ -77,10 +86,13 @@ namespace BraveFish.RabbitBattleGear
                 Channel = channel,
                 Connection = connection,
                 MonoExchangeName = RabbitMonoExchangeName,
-                MonoExchangeRoutingKey = routingKey
+                MonoExchangeRoutingKey = routingKey,
+                MonoExchangeQueueName = queueName
             };
             return rabbitMqContext;
         }
+
+
     }
 
     public interface IRabbitBattleGearContextBuilder
@@ -92,6 +104,8 @@ namespace BraveFish.RabbitBattleGear
         IRabbitBattleGearContextBuilder SetMonoExchangeName(string monoExchangeName);
 
         IRabbitBattleGearContextBuilder SetPassword(string password);
+        
+        IRabbitBattleGearContextBuilder SetUsername(string username);
 
         IRabbitBattleGearContextBuilder SetConnectionShutdown(EventHandler<ShutdownEventArgs> onConnectionShutdown);
 
