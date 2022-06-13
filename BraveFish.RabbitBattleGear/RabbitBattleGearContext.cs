@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Collections.Generic;
+using System.Text;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
@@ -12,22 +13,26 @@ namespace BraveFish.RabbitBattleGear
         public IConnection Connection { get; set; }
         
         public string MonoExchangeName { get; set; }
-        
-        public string MonoExchangeRoutingKey { get; set; }
-        
-        public string MonoExchangeQueueName { get; set; }
-        
 
-        public void PublishMessage(string address, string message)
+        public HashSet<string> QueueNames { get; set; }
+
+
+        public void PublishMessage(string queueName, string address, string message)
         {
+            if (!QueueNames.Contains(queueName))
+            {
+                throw new UnregisteredQueueException();
+            }
+            
             var battleGearMessage = new RabbitBattleGearMessage{Address = address, Message = message};
             var bodyBytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(battleGearMessage));
-            Channel.BasicPublish(MonoExchangeName, MonoExchangeRoutingKey, null, bodyBytes);
+            var routingKeyFromQueueName = $"rt.{queueName}";
+            Channel.BasicPublish(MonoExchangeName, routingKeyFromQueueName, null, bodyBytes);
         }
 
-        public void ConsumeMessage(EventingBasicConsumer consumer)
+        public void ConsumeMessage(string queueName, EventingBasicConsumer consumer)
         {
-            Channel.BasicConsume(MonoExchangeQueueName, false, consumer);
+            Channel.BasicConsume(queueName, false, consumer);
         }
         
         public void AcknowledgeMessage(BasicDeliverEventArgs ea)

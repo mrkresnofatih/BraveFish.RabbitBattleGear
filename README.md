@@ -21,13 +21,15 @@ public static void AddRabbitContext(this IServiceCollection services)
         .SetPort(5672)                      // default: 5672
         .SetUsername("guest")               // default: Null
         .SetPassword("guest")               // default: Null
-        .SetMonoExchangeName("rabbit.ex")   // default: "rabbit", give any name
+        .SetMonoExchangeName("rabbit.ex")   // default: "rabbit", give any name        
+        .AddQueue("rabbitlogger")           // add queue-1
+        .AddQueue("mylogger")               // add queue-2
         .Build();
     services.AddSingleton(rabbitCtx);       // register to Dependency Injection
 }
 ```
 
-3. Create a listener for your MonoExchange. Inherit from abstract class `RabbitBattleListener`.
+3. Create listeners for your MonoExchange. Inherit from abstract class `RabbitBattleListener`.
 
 ```c#
 public class RabbitLogListener : RabbitBattleListener
@@ -38,6 +40,12 @@ public class RabbitLogListener : RabbitBattleListener
         ILogger<RabbitBattleListener> logger) : base(rabbitBattleGearContext)
     {
         _logger = logger;
+    }
+    
+    // register which queue this listener is going to listen to.
+    protected override string GetQueueNameOfThisListener()
+    {
+        return "rabbitlogger";
     }
 
     // register your handlers per address (key).
@@ -87,6 +95,39 @@ public class RabbitLogListener : RabbitBattleListener
         return res;
     }
 }
+
+public class MyLogListener : RabbitBattleListener
+{
+    private readonly ILogger<MyLogListener> _logger;
+
+    public MyLogListener(RabbitBattleGearContext rabbitBattleGearContext, 
+        ILogger<MyLogListener> logger) : base(rabbitBattleGearContext)
+    {
+        _logger = logger;
+    }
+    
+    protected override string GetQueueNameOfThisListener()
+    {
+        return "mylogger";
+    }
+
+    protected override Dictionary<string, Action<string, RabbitBattleGearContext, BasicDeliverEventArgs>> GetBattleMessageHandlers()
+    {
+        var res = new Dictionary<string, Action<string, RabbitBattleGearContext, BasicDeliverEventArgs>>();
+        res.Add("MYLOG1", (message, rabbitContext, eventArgs) =>
+        {
+            _logger.LogInformation("MYLOG1 says: " + message);
+            rabbitContext.AcknowledgeMessage(eventArgs);
+        });
+        res.Add("MYLOG2", (message, rabbitContext, eventArgs) =>
+        {
+            _logger.LogInformation("MYLOG2 says: " + message);
+            rabbitContext.AcknowledgeMessage(eventArgs);
+        });
+
+        return res;
+    }
+}
 ```
 
 4. Create controller to publish a message. Use the `RabbitBattleGearContext` to publish messages.
@@ -119,9 +160,9 @@ public class RabbitLoggerController : ControllerBase
 public void ConfigureServices(IServiceCollection services)
 {
 
-    // other add services
+    // other services
     services.AddRabbitContext();
     services.AddHostedService<RabbitLogListener>();
-    
+    services.AddHostedService<MyLogListener>();
 }
 ```

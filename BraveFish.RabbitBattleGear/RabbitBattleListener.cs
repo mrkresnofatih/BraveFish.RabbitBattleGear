@@ -61,8 +61,9 @@ namespace BraveFish.RabbitBattleGear
                 }
                 
             };
-            
-            _rabbitBattleGearContext.ConsumeMessage(consumer);
+
+            var queueNameOfThisListener = GetQueueNameOfThisListener();
+            _rabbitBattleGearContext.ConsumeMessage(queueNameOfThisListener , consumer);
 
             consumer.Shutdown += OnConsumerShutdown;
             consumer.Registered += OnConsumerRegistered;
@@ -74,9 +75,11 @@ namespace BraveFish.RabbitBattleGear
 
         #endregion
 
-        #region RegisterHandlers
+        #region Overridables
 
         protected abstract Dictionary<string, Action<string, RabbitBattleGearContext, BasicDeliverEventArgs>> GetBattleMessageHandlers();
+
+        protected abstract string GetQueueNameOfThisListener();
 
         #endregion
 
