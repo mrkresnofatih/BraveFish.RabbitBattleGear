@@ -8,7 +8,7 @@ An Opinionated Past-AWSSQS-Handling-Inspired RabbitMq Template Package For .NET 
 
 ```bash
 > dotnet new webapi -n SampleRabbitApi
-> dotnet add package BraveFish.RabbitBattleGear --version 1.0.1-dev
+> dotnet add package BraveFish.RabbitBattleGear --version 1.0.2-dev
 ```
 
 2. Create a rabbitBattleGearContext and Register For DI.
