@@ -8,6 +8,11 @@ namespace BraveFish.RabbitBattleGearApi.Listeners
 {
     public class RabbitLogListener : RabbitBattleListener
     {
+        protected override string GetQueueNameOfThisListener()
+        {
+            return "rabbitlogger";
+        }
+
         private readonly ILogger<RabbitBattleListener> _logger;
 
         public RabbitLogListener(RabbitBattleGearContext rabbitBattleGearContext, 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using RabbitMQ.Client;
 
 namespace BraveFish.RabbitBattleGear
@@ -15,6 +16,8 @@ namespace BraveFish.RabbitBattleGear
         
         private string RabbitUsername { get; set; }
         
+        private HashSet<string> RabbitQueueNames { get; set; }
+
         private EventHandler<ShutdownEventArgs> OnConnectionShutdown { get; set; }
 
         public RabbitBattleGearContextBuilder()
@@ -23,6 +26,7 @@ namespace BraveFish.RabbitBattleGear
             RabbitPort = 5672;
             RabbitMonoExchangeName = "rabbit";
             RabbitPassword = null;
+            RabbitQueueNames = new HashSet<string>();
             OnConnectionShutdown = (o, args) => { };
         }
 
@@ -56,6 +60,12 @@ namespace BraveFish.RabbitBattleGear
             return this;
         }
 
+        public IRabbitBattleGearContextBuilder AddQueue(string queueName)
+        {
+            RabbitQueueNames.Add(queueName);
+            return this;
+        }
+
         public IRabbitBattleGearContextBuilder SetConnectionShutdown(EventHandler<ShutdownEventArgs> onConnectionShutdown)
         {
             OnConnectionShutdown = onConnectionShutdown;
@@ -74,10 +84,14 @@ namespace BraveFish.RabbitBattleGear
             var connection = factory.CreateConnection();
             var channel = connection.CreateModel();
             channel.ExchangeDeclare(exchange: RabbitMonoExchangeName, type: ExchangeType.Direct);
-            var routingKey = $"rt.{RabbitMonoExchangeName}";
-            var queueName = $"qu.{RabbitMonoExchangeName}";
-            channel.QueueDeclare(queue: queueName);
-            channel.QueueBind(queue: queueName, exchange: RabbitMonoExchangeName, routingKey);
+            
+            foreach (var rabbitQueueName in RabbitQueueNames)
+            {
+                var routingKey = $"rt.{rabbitQueueName}";
+                channel.QueueDeclare(queue: rabbitQueueName);
+                channel.QueueBind(queue: rabbitQueueName, exchange: RabbitMonoExchangeName, routingKey);
+            }
+
             channel.BasicQos(0, 1, true);
             connection.ConnectionShutdown += OnConnectionShutdown;
 
@@ -86,8 +100,7 @@ namespace BraveFish.RabbitBattleGear
                 Channel = channel,
                 Connection = connection,
                 MonoExchangeName = RabbitMonoExchangeName,
-                MonoExchangeRoutingKey = routingKey,
-                MonoExchangeQueueName = queueName
+                QueueNames = RabbitQueueNames
             };
             return rabbitMqContext;
         }
@@ -106,6 +119,8 @@ namespace BraveFish.RabbitBattleGear
         IRabbitBattleGearContextBuilder SetPassword(string password);
         
         IRabbitBattleGearContextBuilder SetUsername(string username);
+
+        IRabbitBattleGearContextBuilder AddQueue(string queueName);
 
         IRabbitBattleGearContextBuilder SetConnectionShutdown(EventHandler<ShutdownEventArgs> onConnectionShutdown);
 
