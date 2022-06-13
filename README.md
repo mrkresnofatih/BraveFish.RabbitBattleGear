@@ -144,11 +144,17 @@ public class RabbitLoggerController : ControllerBase
         _rabbitBattleGearContext = rabbitBattleGearContext;
     }
 
-    [HttpGet("publishLogMessage/{id}")]
-    public string Get(string id)
+    [HttpGet("publishMessageToRabbitLogger/{id}")]
+    public string publishMessageToRabbitLogger(string id)
     {
-        // publish based on addresses in the dictionary discussed before
-        _rabbitBattleGearContext.PublishMessage($"LOG{id}", "sample log message");
+        _rabbitBattleGearContext.PublishMessage("rabbitlogger", $"LOG{id}", "sample log message");
+        return "published";
+    }
+    
+    [HttpGet("publishMessageToMyLogger/{id}")]
+    public string PublishMessageToMyLogger(string id)
+    {
+        _rabbitBattleGearContext.PublishMessage("mylogger", $"MYLOG{id}", "mylogger sample log message");
         return "published";
     }
 }
