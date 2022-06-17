@@ -19,15 +19,22 @@ namespace BraveFish.RabbitBattleGear
 
         public void PublishMessage(string queueName, string address, string message)
         {
-            if (!QueueNames.Contains(queueName))
-            {
-                throw new UnregisteredQueueException();
-            }
-            
             var battleGearMessage = new RabbitBattleGearMessage{Address = address, Message = message};
             var bodyBytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(battleGearMessage));
             var routingKeyFromQueueName = $"rt.{queueName}";
-            Channel.BasicPublish(MonoExchangeName, routingKeyFromQueueName, null, bodyBytes);
+            var props = Channel.CreateBasicProperties();
+            props.Persistent = true;
+            Channel.BasicPublish(MonoExchangeName, routingKeyFromQueueName, props, bodyBytes);
+        }
+        
+        public void PublishMessage(string queueName, string address, string message, bool persistent)
+        {
+            var battleGearMessage = new RabbitBattleGearMessage{Address = address, Message = message};
+            var bodyBytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(battleGearMessage));
+            var routingKeyFromQueueName = $"rt.{queueName}";
+            var props = Channel.CreateBasicProperties();
+            props.Persistent = persistent;
+            Channel.BasicPublish(MonoExchangeName, routingKeyFromQueueName, props, bodyBytes);
         }
 
         public void ConsumeMessage(string queueName, EventingBasicConsumer consumer)
