@@ -15,7 +15,7 @@ namespace BraveFish.RabbitBattleGearApi.Controllers
         }
 
         [HttpGet("publishMessageToRabbitLogger/{id}")]
-        public string publishMessageToRabbitLogger(string id)
+        public string PublishMessageToRabbitLogger(string id)
         {
             _rabbitBattleGearContext.PublishMessage("rabbitlogger", $"LOG{id}", "sample log message");
             return "published";

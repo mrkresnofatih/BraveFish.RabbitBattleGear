@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BraveFish.RabbitBattleGear"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BraveFish.RabbitBattleGearApi", "BraveFish.RabbitBattleGearApi\BraveFish.RabbitBattleGearApi.csproj", "{D1960B2F-AA08-4BB7-A036-83EE63D123FE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BraveFish.RabbitBattleGearSecondApi", "BraveFish.RabbitBattleGearSecondApi\BraveFish.RabbitBattleGearSecondApi.csproj", "{914E2D6C-2F82-461F-A085-DF0E29B0BC95}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -44,5 +46,17 @@ Global
 		{D1960B2F-AA08-4BB7-A036-83EE63D123FE}.Release|x64.Build.0 = Release|Any CPU
 		{D1960B2F-AA08-4BB7-A036-83EE63D123FE}.Release|x86.ActiveCfg = Release|Any CPU
 		{D1960B2F-AA08-4BB7-A036-83EE63D123FE}.Release|x86.Build.0 = Release|Any CPU
+		{914E2D6C-2F82-461F-A085-DF0E29B0BC95}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{914E2D6C-2F82-461F-A085-DF0E29B0BC95}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{914E2D6C-2F82-461F-A085-DF0E29B0BC95}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{914E2D6C-2F82-461F-A085-DF0E29B0BC95}.Debug|x64.Build.0 = Debug|Any CPU
+		{914E2D6C-2F82-461F-A085-DF0E29B0BC95}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{914E2D6C-2F82-461F-A085-DF0E29B0BC95}.Debug|x86.Build.0 = Debug|Any CPU
+		{914E2D6C-2F82-461F-A085-DF0E29B0BC95}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{914E2D6C-2F82-461F-A085-DF0E29B0BC95}.Release|Any CPU.Build.0 = Release|Any CPU
+		{914E2D6C-2F82-461F-A085-DF0E29B0BC95}.Release|x64.ActiveCfg = Release|Any CPU
+		{914E2D6C-2F82-461F-A085-DF0E29B0BC95}.Release|x64.Build.0 = Release|Any CPU
+		{914E2D6C-2F82-461F-A085-DF0E29B0BC95}.Release|x86.ActiveCfg = Release|Any CPU
+		{914E2D6C-2F82-461F-A085-DF0E29B0BC95}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
