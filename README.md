@@ -11,6 +11,9 @@ An Opinionated Past-AWSSQS-Handling-Inspired RabbitMq Template Package For .NET 
 
 ## ChangeLogs
 
+### v1.0.4-dev
+1. Publishing Messages & Adding Queues now requires you to use their respective dedicated class objects. Read more about them [here](#exclusive-queues-durability-persistence--autodelete).
+
 ### v1.0.3-dev
 1. You can now define queues as `non-exclusive`, `durable`, and/or `autodelete`. Read more about them [here](#exclusive-queues-durability-persistence--autodelete).
 
@@ -30,18 +33,21 @@ An Opinionated Past-AWSSQS-Handling-Inspired RabbitMq Template Package For .NET 
 2. Create a rabbitBattleGearContext and Register For DI.
 
 ```c#
-public static void AddRabbitContext(this IServiceCollection services)
+public static class RabbitContext
 {
-    var rabbitCtx = new RabbitBattleGearContextBuilder()
-        .SetHostName("localhost")           // default: "localhost"
-        .SetPort(5672)                      // default: 5672
-        .SetUsername("guest")               // default: Null
-        .SetPassword("guest")               // default: Null
-        .SetMonoExchangeName("rabbit.ex")   // default: "rabbit", give any name        
-        .AddQueue("rabbitlogger")           // add queue-1
-        .AddQueue("mylogger")               // add queue-2
-        .Build();
-    services.AddSingleton(rabbitCtx);       // register to Dependency Injection
+    public static void AddRabbitContext(this IServiceCollection services)
+    {
+        var rabbitCtx = new RabbitBattleGearContextBuilder()
+            .SetHostName("localhost")
+            .SetPort(5672)
+            .SetUsername("guest")
+            .SetPassword("guest")
+            .SetMonoExchangeName("rabbit.ex")
+            .AddQueue(new QueueProps { QueueName = "rabbitLogger"})
+            .AddQueue(new QueueProps { QueueName = "myLogger" })
+            .Build();
+        services.AddSingleton(rabbitCtx);
+    }
 }
 ```
 
@@ -161,16 +167,26 @@ public class RabbitLoggerController : ControllerBase
     }
 
     [HttpGet("publishMessageToRabbitLogger/{id}")]
-    public string publishMessageToRabbitLogger(string id)
+    public string PublishMessageToRabbitLogger(string id)
     {
-        _rabbitBattleGearContext.PublishMessage("rabbitlogger", $"LOG{id}", "sample log message");
+        _rabbitBattleGearContext.PublishMessage(new PublishMessageRequest 
+        {
+            QueueName = "rabbitLogger",
+            Address = $"LOG{id}",
+            Message = "hello there!"
+        });
         return "published";
     }
     
     [HttpGet("publishMessageToMyLogger/{id}")]
     public string PublishMessageToMyLogger(string id)
     {
-        _rabbitBattleGearContext.PublishMessage("mylogger", $"MYLOG{id}", "mylogger sample log message");
+        _rabbitBattleGearContext.PublishMessage(new PublishMessageRequest
+        {
+            QueueName = "myLogger",
+            Address = $"MYLOG{id}",
+            Message = $"Message received at myLogger LOG{id}"
+        });
         return "published";
     }
 }
@@ -189,49 +205,26 @@ public void ConfigureServices(IServiceCollection services)
 }
 ```
 
-## Multiple Queues
-
-1. You can now declare multiple queues using the Builder pattern of the `RabbitBattleGearContext` as shown in the example above and as highlighted below:
-
-```c#
-var rabbitCtx = new RabbitBattleGearContextBuilder()
-    // ...        
-    .AddQueue("rabbitlogger")           // add queue-1
-    .AddQueue("mylogger")               // add queue-2
-    // ...
-    .Build();
-```
-
-2. You can now setup a listener per queue by inheriting `RabbitBattleListener` as shown in the example before. Inheriting this abstract class will require you to override the implementation of 2 methods: 1) `GetQueueNameOfThisListener` 2) `GetBattleMessageHandlers`:
-
-```c#
-    // return your queue name
-    protected override string GetQueueNameOfThisListener()
-
-    // return your message handlers
-    protected override Dictionary<string, Action<string, RabbitBattleGearContext, BasicDeliverEventArgs>> GetBattleMessageHandlers()
-```
-
 ## Exclusive Queues, Durability, Persistence, & AutoDelete
 
 By default, this package assumes the queue is `non-exclusive`. It means that other applications can define an existing queue and publish messages to them. If your queue is set to `exclusive: true`, any application that declares the same queue will not be able to start/run.
 
 ```c#
 // Default (Non-Exclusive)
-.AddQueue("rabbitlogger")
+.AddQueue(new QueueProps { QueueName = "rabbitLogger"})
 
 // Exclusive
-.AddQueue("mylogger", exclusive: true, /* other non-default settings */)
+.AddQueue(new QueueProps { QueueName = "rabbitLogger", Exclusive = false})
 
 ```
 
 Autodelete is by default set to `false` in this package. This will prevent queues from being taken down by unexpected application down-time(s). You can override this behaviour like so:
 ```c#
 // Default (AutoDelete: false)
-.AddQueue("rabbitlogger")
+.AddQueue(new QueueProps { QueueName = "myLogger" })
 
 // AutoDelete: true
-.AddQueue("mylogger", autoDelete: true, /* other non-default settings */)
+.AddQueue(new QueueProps { QueueName = "rabbitLogger", AutoDelete = true})
 
 ```
 
@@ -241,15 +234,26 @@ This package also assumes by default that the queue is `durable` and publishes `
 ```c#
 // Queue Durability: setup in the RabbitBattleGearContextBuilder
 // Default (Non-Exclusive)
-.AddQueue("rabbitlogger")
+.AddQueue(new QueueProps { QueueName = "myLogger" })
 // Durable
-.AddQueue("mylogger", durable: false, /* other non-default settings */)
+.AddQueue(new QueueProps { QueueName = "rabbitLogger", Durable = false})
 
 
 // Message Persistence: choose publishing method
 // Default: Persistent => True
-_rabbitBattleGearContext.PublishMessage("mylogger", $"MYLOG{id}", "mylogger sample log message");
+_rabbitBattleGearContext.PublishMessage(new PublishMessageRequest
+{
+    QueueName = "myLogger",
+    Address = $"MYLOG{id}",
+    Message = $"Message received at myLogger LOG{id}"
+});
 // Persistent => False
-_rabbitBattleGearContext.PublishMessage("mylogger", $"MYLOG{id}", "mylogger sample log message", false);
+_rabbitBattleGearContext.PublishMessage(new PublishMessageRequest
+{
+    QueueName = "myLogger",
+    Address = $"MYLOG{id}",
+    Message = $"Message received at myLogger LOG{id}",
+    Persistent = false
+});
 
 ```
