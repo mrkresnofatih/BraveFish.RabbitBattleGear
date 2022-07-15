@@ -30,7 +30,7 @@ namespace BraveFish.RabbitBattleGearSecondApi.Listener
 
         protected override string GetQueueNameOfThisListener()
         {
-            return "autologger";
+            return "autoLogger";
         }
     }
 }

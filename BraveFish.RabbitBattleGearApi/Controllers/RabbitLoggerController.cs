@@ -20,7 +20,7 @@ namespace BraveFish.RabbitBattleGearApi.Controllers
             _rabbitBattleGearContext.PublishMessage(new PublishMessageRequest 
             {
                 QueueName = "rabbitLogger",
-                Address = $"MYLOG{id}",
+                Address = $"LOG{id}",
                 Message = "hello there!"
             });
             return "published";
@@ -32,7 +32,7 @@ namespace BraveFish.RabbitBattleGearApi.Controllers
             _rabbitBattleGearContext.PublishMessage(new PublishMessageRequest
             {
                 QueueName = "myLogger",
-                Address = $"LOG{id}",
+                Address = $"MYLOG{id}",
                 Message = $"Message received at myLogger LOG{id}"
             });
             return "published";
