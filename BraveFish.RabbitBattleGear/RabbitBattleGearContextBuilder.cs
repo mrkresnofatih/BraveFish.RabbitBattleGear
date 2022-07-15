@@ -58,27 +58,9 @@ namespace BraveFish.RabbitBattleGear
             return this;
         }
 
-        public IRabbitBattleGearContextBuilder AddQueue(string queueName)
+        public IRabbitBattleGearContextBuilder AddQueue(QueueProps queueProps)
         {
-            var queueProp = new QueueProps
-            {
-                Exclusive = false,
-                AutoDelete = false,
-                Durable = true
-            };
-            RabbitQueueNames.Add(queueName, queueProp);
-            return this;
-        }
-
-        public IRabbitBattleGearContextBuilder AddQueue(string queueName, bool exclusive, bool autoDelete, bool durable)
-        {
-            var queueProp = new QueueProps
-            {
-                Exclusive = exclusive,
-                AutoDelete = autoDelete,
-                Durable = durable
-            };
-            RabbitQueueNames.Add(queueName, queueProp);
+            RabbitQueueNames.Add(queueProps.QueueName, queueProps);
             return this;
         }
 
@@ -120,11 +102,12 @@ namespace BraveFish.RabbitBattleGear
 
     }
 
-    class QueueProps
+    public class QueueProps
     {
-        public bool Exclusive { get; set; }
-        public bool Durable { get; set; }
-        public bool AutoDelete { get; set; }
+        public string QueueName { get; set; }
+        public bool Exclusive { get; set; } = false;
+        public bool Durable { get; set; } = true;
+        public bool AutoDelete { get; set; } = false;
     }
 
     public interface IRabbitBattleGearContextBuilder
@@ -138,10 +121,8 @@ namespace BraveFish.RabbitBattleGear
         IRabbitBattleGearContextBuilder SetPassword(string password);
         
         IRabbitBattleGearContextBuilder SetUsername(string username);
-
-        IRabbitBattleGearContextBuilder AddQueue(string queueName);
         
-        IRabbitBattleGearContextBuilder AddQueue(string queueName, bool exclusive, bool autoDelete, bool durable);
+        IRabbitBattleGearContextBuilder AddQueue(QueueProps queueProps);
 
         RabbitBattleGearContext Build();
     }

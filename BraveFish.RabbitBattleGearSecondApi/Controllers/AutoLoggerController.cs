@@ -17,14 +17,24 @@ namespace BraveFish.RabbitBattleGearSecondApi.Controllers
         [HttpGet("PublishMessageToAutoLogger")]
         public string PublishMessageToAutoLoggerQueue()
         {
-            _rabbitBattleGearContext.PublishMessage("autologger", "LOGME", "hi there!");
+            _rabbitBattleGearContext.PublishMessage(new PublishMessageRequest
+            {
+                QueueName = "autoLogger",
+                Address = "LOGME",
+                Message = "yow wassup"
+            });
             return "sent";
         }
         
         [HttpGet("PublishMessageToMyLogger/{id}")]
         public string PublishMessageToMyLoggerQueue(string id)
         {
-            _rabbitBattleGearContext.PublishMessage("mylogger", $"MYLOG{id}", "hi there!");
+            _rabbitBattleGearContext.PublishMessage(new PublishMessageRequest
+            {
+                QueueName = "myLogger",
+                Address = $"MYLOG{id}",
+                Message = "from api2"
+            });
             return "sent";
         }
     }
