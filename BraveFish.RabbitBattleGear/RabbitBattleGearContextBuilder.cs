@@ -19,8 +19,6 @@ namespace BraveFish.RabbitBattleGear
         
         private Dictionary<string, QueueProps> RabbitQueueNames { get; set; }
 
-        private EventHandler<ShutdownEventArgs> OnConnectionShutdown { get; set; }
-
         public RabbitBattleGearContextBuilder()
         {
             RabbitHostname = "localhost";
@@ -28,7 +26,6 @@ namespace BraveFish.RabbitBattleGear
             RabbitMonoExchangeName = "rabbit";
             RabbitPassword = null;
             RabbitQueueNames = new Dictionary<string, QueueProps>();
-            OnConnectionShutdown = (o, args) => { };
         }
 
         public IRabbitBattleGearContextBuilder SetHostName(string hostname)
@@ -61,33 +58,9 @@ namespace BraveFish.RabbitBattleGear
             return this;
         }
 
-        public IRabbitBattleGearContextBuilder AddQueue(string queueName)
+        public IRabbitBattleGearContextBuilder AddQueue(QueueProps queueProps)
         {
-            var queueProp = new QueueProps
-            {
-                Exclusive = false,
-                AutoDelete = false,
-                Durable = true
-            };
-            RabbitQueueNames.Add(queueName, queueProp);
-            return this;
-        }
-
-        public IRabbitBattleGearContextBuilder AddQueue(string queueName, bool exclusive, bool autoDelete, bool durable)
-        {
-            var queueProp = new QueueProps
-            {
-                Exclusive = exclusive,
-                AutoDelete = autoDelete,
-                Durable = durable
-            };
-            RabbitQueueNames.Add(queueName, queueProp);
-            return this;
-        }
-
-        public IRabbitBattleGearContextBuilder SetConnectionShutdown(EventHandler<ShutdownEventArgs> onConnectionShutdown)
-        {
-            OnConnectionShutdown = onConnectionShutdown;
+            RabbitQueueNames.Add(queueProps.QueueName, queueProps);
             return this;
         }
 
@@ -115,7 +88,6 @@ namespace BraveFish.RabbitBattleGear
             }
 
             channel.BasicQos(0, 1, true);
-            connection.ConnectionShutdown += OnConnectionShutdown;
 
             var rabbitMqContext = new RabbitBattleGearContext
             {
@@ -130,11 +102,12 @@ namespace BraveFish.RabbitBattleGear
 
     }
 
-    class QueueProps
+    public class QueueProps
     {
-        public bool Exclusive { get; set; }
-        public bool Durable { get; set; }
-        public bool AutoDelete { get; set; }
+        public string QueueName { get; set; }
+        public bool Exclusive { get; set; } = false;
+        public bool Durable { get; set; } = true;
+        public bool AutoDelete { get; set; } = false;
     }
 
     public interface IRabbitBattleGearContextBuilder
@@ -148,12 +121,8 @@ namespace BraveFish.RabbitBattleGear
         IRabbitBattleGearContextBuilder SetPassword(string password);
         
         IRabbitBattleGearContextBuilder SetUsername(string username);
-
-        IRabbitBattleGearContextBuilder AddQueue(string queueName);
         
-        IRabbitBattleGearContextBuilder AddQueue(string queueName, bool exclusive, bool autoDelete, bool durable);
-
-        IRabbitBattleGearContextBuilder SetConnectionShutdown(EventHandler<ShutdownEventArgs> onConnectionShutdown);
+        IRabbitBattleGearContextBuilder AddQueue(QueueProps queueProps);
 
         RabbitBattleGearContext Build();
     }

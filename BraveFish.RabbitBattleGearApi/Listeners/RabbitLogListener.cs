@@ -10,7 +10,7 @@ namespace BraveFish.RabbitBattleGearApi.Listeners
     {
         protected override string GetQueueNameOfThisListener()
         {
-            return "rabbitlogger";
+            return "rabbitLogger";
         }
 
         private readonly ILogger<RabbitBattleListener> _logger;

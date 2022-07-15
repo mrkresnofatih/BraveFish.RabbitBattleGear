@@ -35,7 +35,7 @@ namespace BraveFish.RabbitBattleGearApi.Listeners
 
         protected override string GetQueueNameOfThisListener()
         {
-            return "mylogger";
+            return "myLogger";
         }
     }
 }

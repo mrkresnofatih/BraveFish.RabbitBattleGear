@@ -15,25 +15,18 @@ namespace BraveFish.RabbitBattleGear
         public string MonoExchangeName { get; set; }
 
         public HashSet<string> QueueNames { get; set; }
-
-
-        public void PublishMessage(string queueName, string address, string message)
-        {
-            var battleGearMessage = new RabbitBattleGearMessage{Address = address, Message = message};
-            var bodyBytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(battleGearMessage));
-            var routingKeyFromQueueName = $"rt.{queueName}";
-            var props = Channel.CreateBasicProperties();
-            props.Persistent = true;
-            Channel.BasicPublish(MonoExchangeName, routingKeyFromQueueName, props, bodyBytes);
-        }
         
-        public void PublishMessage(string queueName, string address, string message, bool persistent)
+        public void PublishMessage(PublishMessageRequest publishMessageRequest)
         {
-            var battleGearMessage = new RabbitBattleGearMessage{Address = address, Message = message};
+            var battleGearMessage = new RabbitBattleGearMessage
+            {
+                Address = publishMessageRequest.Address, 
+                Message = publishMessageRequest.Message
+            };
             var bodyBytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(battleGearMessage));
-            var routingKeyFromQueueName = $"rt.{queueName}";
+            var routingKeyFromQueueName = $"rt.{publishMessageRequest.QueueName}";
             var props = Channel.CreateBasicProperties();
-            props.Persistent = persistent;
+            props.Persistent = publishMessageRequest.Persistent;
             Channel.BasicPublish(MonoExchangeName, routingKeyFromQueueName, props, bodyBytes);
         }
 
@@ -56,5 +49,16 @@ namespace BraveFish.RabbitBattleGear
         {
             Channel.BasicReject(ea.DeliveryTag, false);
         }
+    }
+
+    public class PublishMessageRequest
+    {
+        public string QueueName { get; set; }
+
+        public string Message { get; set; }
+
+        public string Address { get; set; }
+
+        public bool Persistent { get; set; } = true;
     }
 }

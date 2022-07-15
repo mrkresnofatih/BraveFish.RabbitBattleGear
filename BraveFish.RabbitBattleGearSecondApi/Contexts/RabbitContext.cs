@@ -13,8 +13,8 @@ namespace BraveFish.RabbitBattleGearSecondApi.Contexts
                 .SetUsername("guest")
                 .SetPassword("guest")
                 .SetMonoExchangeName("rabbit.ex")
-                .AddQueue("autologger")
-                .AddQueue("mylogger")
+                .AddQueue(new QueueProps { QueueName = "autoLogger" })
+                .AddQueue(new QueueProps { QueueName = "myLogger" })
                 .Build();
             services.AddSingleton(rabbitCtx);
         }
