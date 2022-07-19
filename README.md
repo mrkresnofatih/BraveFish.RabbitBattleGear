@@ -11,6 +11,9 @@ An Opinionated Past-AWSSQS-Handling-Inspired RabbitMq Template Package For .NET 
 
 ## ChangeLogs
 
+### v5.0.1-dev
+1. Exactly the same as v1.0.4-dev, just more informative of the target .NET framework (net5.0).
+
 ### v1.0.4-dev
 1. Publishing Messages & Adding Queues now requires you to use their respective dedicated class objects. Read more about them [here](#exclusive-queues-durability-persistence--autodelete).
 
