@@ -1,7 +1,6 @@
 ﻿using BraveFish.RabbitBattleGear;
-using Microsoft.Extensions.DependencyInjection;
 
-namespace BraveFish.RabbitBattleGearApi.Contexts
+namespace BraveFish.SampleApi.Contexts
 {
     public static class RabbitContext
     {
@@ -13,8 +12,7 @@ namespace BraveFish.RabbitBattleGearApi.Contexts
                 .SetUsername("guest")
                 .SetPassword("guest")
                 .SetMonoExchangeName("rabbit.ex")
-                .AddQueue(new QueueProps { QueueName = "rabbitLogger"})
-                .AddQueue(new QueueProps { QueueName = "myLogger" })
+                .AddQueue(new QueueProps { QueueName = "rabbitLogger" })
                 .Build();
             services.AddSingleton(rabbitCtx);
         }

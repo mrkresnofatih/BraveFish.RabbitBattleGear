@@ -11,6 +11,9 @@ An Opinionated Past-AWSSQS-Handling-Inspired RabbitMq Template Package For .NET 
 
 ## ChangeLogs
 
+### v6.0.1-dev
+1. Exactly the same as v1.0.4-dev, just more informative of the target .NET framework (net6.0)
+
 ### v5.0.1-dev
 1. Exactly the same as v1.0.4-dev, just more informative of the target .NET framework (net5.0).
 
@@ -30,7 +33,7 @@ An Opinionated Past-AWSSQS-Handling-Inspired RabbitMq Template Package For .NET 
 
 ```bash
 > dotnet new webapi -n SampleRabbitApi
-> dotnet add package BraveFish.RabbitBattleGear --version 1.0.3-dev
+> dotnet add package BraveFish.RabbitBattleGear --version 6.0.1-dev
 ```
 
 2. Create a rabbitBattleGearContext and Register For DI.
